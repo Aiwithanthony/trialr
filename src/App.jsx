@@ -239,6 +239,7 @@ export function App() {
   const [newExperimentSaving, setNewExperimentSaving] = useState(false);
   const [experimentForm, setExperimentForm] = useState({ name: "", hypothesis: "", primaryMetric: "views" });
   const [refreshingExperimentId, setRefreshingExperimentId] = useState("");
+  const [deletingExperimentId, setDeletingExperimentId] = useState("");
   const [themePreference, setThemePreference] = useState(() => {
     try {
       const saved = window.localStorage.getItem(THEME_STORAGE_KEY);
@@ -376,6 +377,26 @@ export function App() {
       setNotice({ type: "error", text: normalizeError(error, "Could not refresh analytics yet.") });
     } finally {
       setRefreshingExperimentId("");
+    }
+  }
+
+  async function deleteExperiment(experimentId) {
+    if (isDemo) {
+      setNotice({ type: "info", text: "Demo tests are sample data and cannot be deleted." });
+      return;
+    }
+    if (deletingExperimentId) return;
+    setDeletingExperimentId(experimentId);
+    try {
+      await api(`/api/experiments/${experimentId}`, { method: "DELETE" });
+      const remaining = experiments.filter((experiment) => experiment.id !== experimentId);
+      setExperiments(remaining);
+      if (selectedExperimentId === experimentId) setSelectedExperimentId(remaining[0]?.id || "");
+      setNotice({ type: "success", text: "Test deleted." });
+    } catch (error) {
+      setNotice({ type: "error", text: normalizeError(error, "Could not delete the test.") });
+    } finally {
+      setDeletingExperimentId("");
     }
   }
 
@@ -689,6 +710,8 @@ export function App() {
           onNewExperiment={() => setShowNewExperiment(true)}
           onRefreshExperiment={refreshExperimentAnalytics}
           refreshingExperimentId={refreshingExperimentId}
+          onDeleteExperiment={deleteExperiment}
+          deletingExperimentId={deletingExperimentId}
           notice={notice}
           onDismissNotice={() => setNotice(null)}
           themePreference={themePreference}

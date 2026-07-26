@@ -1115,7 +1115,13 @@ h2 {
   line-height: 1.5;
 }
 
-.experiment-detail-header > button,
+.experiment-detail-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.experiment-detail-actions > button,
 .variant-empty-state button,
 .experiment-detail-empty button {
   min-height: 42px;
@@ -1132,15 +1138,26 @@ h2 {
   white-space: nowrap;
 }
 
-.experiment-detail-header > button:hover:not(:disabled) {
+.experiment-detail-actions > button:hover:not(:disabled) {
   border-color: var(--blue);
   color: var(--blue-dark);
   background: #f5f7ff;
 }
 
-.experiment-detail-header > button:disabled {
+.experiment-detail-actions > button:disabled {
   opacity: 0.48;
   cursor: not-allowed;
+}
+
+.experiment-detail-actions .delete-experiment-button {
+  padding: 0 11px;
+  color: var(--danger);
+}
+
+.experiment-detail-actions .delete-experiment-button:hover:not(:disabled) {
+  border-color: var(--danger);
+  color: var(--danger);
+  background: #fff5f5;
 }
 
 .experiment-summary-grid {
@@ -1589,8 +1606,12 @@ h2 {
     flex-direction: column;
   }
 
-  .experiment-detail-header > button {
+  .experiment-detail-actions {
     width: 100%;
+  }
+
+  .experiment-detail-actions > button:first-child {
+    flex: 1;
   }
 
   .experiment-summary-grid {

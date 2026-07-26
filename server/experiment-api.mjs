@@ -203,6 +203,21 @@ export function createExperimentApi({ filePath = DEFAULT_FILE } = {}) {
         return true;
       }
 
+      const deleteMatch = url.pathname.match(/^\/api\/experiments\/([^/]+)$/);
+      if (deleteMatch && request.method === "DELETE") {
+        const removed = await updateData((data) => {
+          const index = data.experiments.findIndex((entry) => entry.id === deleteMatch[1]);
+          if (index === -1) return null;
+          return data.experiments.splice(index, 1)[0];
+        });
+        if (!removed) {
+          sendJson(response, 404, { error: "Experiment not found." });
+          return true;
+        }
+        sendJson(response, 200, { deletedId: removed.id, variantCount: removed.variants?.length || 0 });
+        return true;
+      }
+
       sendJson(response, 404, { error: "Experiment API route not found." });
       return true;
     } catch (error) {

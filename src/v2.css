@@ -1142,3 +1142,131 @@ html[data-trialr-theme="dark"] .auth-screen-v2 .auth-note.auth-error {
   opacity: 0.55;
   cursor: default;
 }
+
+.experiments-page-v2 .experiment-detail-actions .delete-experiment-button {
+  border-color: var(--v2-line-dark);
+  color: #b91c1c;
+  background: var(--v2-paper);
+}
+
+.experiments-page-v2 .experiment-detail-actions .delete-experiment-button:hover:not(:disabled) {
+  border-color: #b91c1c;
+  color: #b91c1c;
+  background: #fef2f2;
+}
+
+.experiments-page-v2 .delete-confirm {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin: -12px 0 26px;
+  padding: 15px 17px;
+  border: 1px solid #fca5a5;
+  background: #fff5f5;
+}
+
+.experiments-page-v2 .delete-confirm > svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+  color: #b91c1c;
+}
+
+.experiments-page-v2 .delete-confirm-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.experiments-page-v2 .delete-confirm-copy strong {
+  font-size: 14px;
+  color: #7f1d1d;
+}
+
+.experiments-page-v2 .delete-confirm-copy span {
+  font-size: 13px;
+  line-height: 1.5;
+  color: #9f2b2b;
+}
+
+.experiments-page-v2 .delete-confirm-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.experiments-page-v2 .delete-confirm-actions button {
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 13px;
+  border: 1px solid var(--v2-line-dark);
+  background: var(--v2-paper);
+  color: var(--v2-ink);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.experiments-page-v2 .delete-confirm-actions .delete-confirm-go {
+  border-color: #b91c1c;
+  color: #fff;
+  background: #b91c1c;
+}
+
+.experiments-page-v2 .delete-confirm-actions .delete-confirm-go:hover:not(:disabled) {
+  background: #991b1b;
+}
+
+.experiments-page-v2 .delete-confirm-actions button:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+html[data-trialr-theme="dark"] .experiments-page-v2 .experiment-detail-actions .delete-experiment-button {
+  color: #f87171;
+}
+
+html[data-trialr-theme="dark"] .experiments-page-v2 .experiment-detail-actions .delete-experiment-button:hover:not(:disabled) {
+  border-color: #f87171;
+  color: #fca5a5;
+  background: #2a1416;
+}
+
+html[data-trialr-theme="dark"] .experiments-page-v2 .delete-confirm {
+  border-color: #7f1d1d;
+  background: #24121580;
+}
+
+html[data-trialr-theme="dark"] .experiments-page-v2 .delete-confirm > svg {
+  color: #f87171;
+}
+
+html[data-trialr-theme="dark"] .experiments-page-v2 .delete-confirm-copy strong {
+  color: #fecaca;
+}
+
+html[data-trialr-theme="dark"] .experiments-page-v2 .delete-confirm-copy span {
+  color: #fca5a5;
+}
+
+html[data-trialr-theme="dark"] .experiments-page-v2 .delete-confirm-actions .delete-confirm-go {
+  border-color: #dc2626;
+  background: #dc2626;
+}
+
+@media (max-width: 900px) {
+  .experiments-page-v2 .delete-confirm {
+    flex-wrap: wrap;
+  }
+
+  .experiments-page-v2 .delete-confirm-actions {
+    margin-left: 0;
+    width: 100%;
+  }
+}

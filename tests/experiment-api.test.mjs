@@ -102,3 +102,46 @@ test("refreshes and stores analytics for every variant", async (context) => {
   assert.equal(variant.analytics.igReelsAvgWatchTime, 6200);
   assert.equal(variant.analyticsSnapshots.length, 1);
 });
+
+test("deletes a test and leaves the others untouched", async (context) => {
+  const directory = await mkdtemp(join(tmpdir(), "trialr-experiments-"));
+  context.after(() => rm(directory, { recursive: true, force: true }));
+  const filePath = join(directory, "experiments.json");
+  const api = createExperimentApi({ filePath });
+
+  const keptResponse = response();
+  await api.handle(request("POST", "/api/experiments", { name: "Keep me" }), keptResponse, "");
+  const doomedResponse = response();
+  await api.handle(request("POST", "/api/experiments", { name: "Delete me" }), doomedResponse, "");
+  const doomedId = doomedResponse.body.experiment.id;
+
+  const variantResponse = response();
+  await api.handle(request("POST", `/api/experiments/${doomedId}/variants`, {
+    label: "Variant A",
+    zernioPostId: "post_123",
+  }), variantResponse, "");
+  assert.equal(variantResponse.statusCode, 201);
+
+  const deleteResponse = response();
+  await api.handle(request("DELETE", `/api/experiments/${doomedId}`), deleteResponse, "");
+
+  assert.equal(deleteResponse.statusCode, 200);
+  assert.equal(deleteResponse.body.deletedId, doomedId);
+  assert.equal(deleteResponse.body.variantCount, 1);
+
+  // The delete has to survive a reload, not just disappear from memory.
+  const reloaded = await createExperimentApi({ filePath }).readData();
+  assert.deepEqual(reloaded.experiments.map((entry) => entry.name), ["Keep me"]);
+});
+
+test("deleting a test that does not exist reports 404", async (context) => {
+  const directory = await mkdtemp(join(tmpdir(), "trialr-experiments-"));
+  context.after(() => rm(directory, { recursive: true, force: true }));
+  const api = createExperimentApi({ filePath: join(directory, "experiments.json") });
+
+  const res = response();
+  await api.handle(request("DELETE", "/api/experiments/does-not-exist"), res, "");
+
+  assert.equal(res.statusCode, 404);
+  assert.equal(res.body.error, "Experiment not found.");
+});

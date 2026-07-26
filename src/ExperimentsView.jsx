@@ -1,6 +1,8 @@
+import { useState } from "react";
 import {
   IconArrowLeft,
   IconAlertCircle,
+  IconAlertTriangle,
   IconBrandInstagram,
   IconCircleCheck,
   IconExternalLink,
@@ -10,6 +12,7 @@ import {
   IconPointFilled,
   IconPlus,
   IconRefresh,
+  IconTrash,
   IconX,
 } from "@tabler/icons-react";
 import { ThemeToggle } from "./ThemeToggle.jsx";
@@ -90,11 +93,14 @@ export function ExperimentsView({
   onNewExperiment,
   onRefreshExperiment,
   refreshingExperimentId,
+  onDeleteExperiment,
+  deletingExperimentId,
   notice,
   onDismissNotice,
   themePreference = "system",
   onThemePreferenceChange,
 }) {
+  const [confirmDeleteId, setConfirmDeleteId] = useState("");
   const selected = experiments.find((experiment) => experiment.id === selectedExperimentId) || experiments[0] || null;
   const metric = selected?.primaryMetric || "views";
   const measured = selected?.variants.filter((variant) => variant.analytics) || [];
@@ -160,11 +166,52 @@ export function ExperimentsView({
                   <h2>{selected.name}</h2>
                   <p>{selected.hypothesis || "No hypothesis added yet."}</p>
                 </div>
-                <button type="button" onClick={() => onRefreshExperiment(selected.id)} disabled={!selected.variants.length || refreshingExperimentId === selected.id}>
-                  {refreshingExperimentId === selected.id ? <IconLoader2 className="spin" size={19} /> : <IconRefresh size={19} />}
-                  Refresh stats
-                </button>
+                <div className="experiment-detail-actions">
+                  <button type="button" onClick={() => onRefreshExperiment(selected.id)} disabled={!selected.variants.length || refreshingExperimentId === selected.id}>
+                    {refreshingExperimentId === selected.id ? <IconLoader2 className="spin" size={19} /> : <IconRefresh size={19} />}
+                    Refresh stats
+                  </button>
+                  <button
+                    className="delete-experiment-button"
+                    type="button"
+                    onClick={() => setConfirmDeleteId(selected.id)}
+                    disabled={confirmDeleteId === selected.id || deletingExperimentId === selected.id}
+                    aria-label={`Delete ${selected.name}`}
+                    title="Delete this test"
+                  >
+                    <IconTrash size={19} />
+                  </button>
+                </div>
               </div>
+
+              {confirmDeleteId === selected.id && (
+                <div className="delete-confirm" role="alertdialog" aria-label={`Confirm deleting ${selected.name}`}>
+                  <IconAlertTriangle size={21} />
+                  <div className="delete-confirm-copy">
+                    <strong>Delete “{selected.name}”?</strong>
+                    <span>
+                      {selected.variants.length
+                        ? `This permanently removes the saved history for ${selected.variants.length} published variant${selected.variants.length === 1 ? "" : "s"}. The Reels stay live on Instagram, but their tracked stats cannot be recovered.`
+                        : "This test has no variants, so nothing published is affected."}
+                    </span>
+                  </div>
+                  <div className="delete-confirm-actions">
+                    <button type="button" onClick={() => setConfirmDeleteId("")} disabled={deletingExperimentId === selected.id}>Cancel</button>
+                    <button
+                      type="button"
+                      className="delete-confirm-go"
+                      onClick={() => {
+                        setConfirmDeleteId("");
+                        onDeleteExperiment(selected.id);
+                      }}
+                      disabled={deletingExperimentId === selected.id}
+                    >
+                      {deletingExperimentId === selected.id ? <IconLoader2 className="spin" size={17} /> : <IconTrash size={17} />}
+                      Delete test
+                    </button>
+                  </div>
+                </div>
+              )}
 
               <div className="experiment-summary-grid">
                 <div><span>Primary metric</span><strong>{metricLabel(metric)}</strong></div>
