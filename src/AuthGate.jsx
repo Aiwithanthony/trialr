@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { IconAlertCircle, IconLoader2, IconLockPassword, IconPointFilled } from "@tabler/icons-react";
+import { IconAlertCircle, IconLoader2, IconLockPassword } from "@tabler/icons-react";
 
 const THEME_STORAGE_KEY = "trialr-v2-theme";
 
@@ -40,12 +40,12 @@ export function AuthGate({ children }) {
 
   useEffect(() => {
     if (!locked) return undefined;
-    document.body.classList.add("trialr-v2-body");
+    document.body.classList.add("trialr-body");
     const theme = resolveTheme();
     document.documentElement.dataset.trialrTheme = theme;
     document.documentElement.style.colorScheme = theme;
     return () => {
-      document.body.classList.remove("trialr-v2-body");
+      document.body.classList.remove("trialr-body");
       delete document.documentElement.dataset.trialrTheme;
       document.documentElement.style.removeProperty("color-scheme");
     };
@@ -77,15 +77,10 @@ export function AuthGate({ children }) {
   if (!locked) return children;
 
   return (
-    <main className="auth-screen-v2">
+    <main className="auth-screen-studio">
       <form className="auth-panel" onSubmit={submit}>
-        <div className="v2-system-label">
-          <IconPointFilled size={12} aria-hidden="true" />
-          <span>ACCESS_CONTROL // 01</span>
-        </div>
-        <h1>
-          Private <em>console.</em>
-        </h1>
+        <div className="auth-mark" aria-hidden="true"><IconLockPassword size={16} stroke={1.7} /></div>
+        <h1>Trialr</h1>
         {status.misconfigured ? (
           <p className="auth-note auth-error">
             <IconAlertCircle size={15} aria-hidden="true" />
@@ -93,7 +88,7 @@ export function AuthGate({ children }) {
           </p>
         ) : (
           <>
-            <p className="auth-note">Enter the passphrase to open Trialr.</p>
+            <p className="auth-note">Enter your passphrase to continue.</p>
             <label className="auth-field">
               <span>Passphrase</span>
               <input

@@ -8,12 +8,12 @@ const THEMES = [
 
 export function ThemeToggle({ value, onChange }) {
   return (
-    <div className="v2-theme-toggle" role="group" aria-label="Appearance">
+    <div className="theme-toggle" role="group" aria-label="Appearance">
       {THEMES.map(([theme, label, Icon]) => (
         <button
           type="button"
           key={theme}
-          className={value === theme ? "v2-theme-option v2-theme-option-active" : "v2-theme-option"}
+          className={value === theme ? "theme-option theme-option-active" : "theme-option"}
           onClick={() => onChange(theme)}
           aria-label={`Use ${label.toLowerCase()} appearance`}
           aria-pressed={value === theme}

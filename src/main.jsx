@@ -3,7 +3,7 @@ import { createRoot } from "react-dom/client";
 import { App } from "./App.jsx";
 import { AuthGate } from "./AuthGate.jsx";
 import "./styles.css";
-import "./v2.css";
+import "./darkroom.css";
 
 createRoot(document.getElementById("root")).render(
   <React.StrictMode>

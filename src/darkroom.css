@@ -1,0 +1,1740 @@
+/*
+ * Trialr — darkroom studio.
+ *
+ * The footage is the interface. Everything here recedes so 9:16 frames can be
+ * the brightest thing on screen. Warm near-black ground, hairline structure,
+ * and one desaturated safelight amber reserved for what is live, selected, or
+ * actionable. See .impeccable.md for the full design context.
+ */
+
+:root {
+  color-scheme: dark;
+
+  --ground: oklch(0.155 0.006 55);
+  --surface: oklch(0.196 0.007 55);
+  --surface-lift: oklch(0.238 0.008 55);
+  --edge: oklch(0.295 0.008 55);
+  --edge-strong: oklch(0.40 0.011 55);
+  --ink: oklch(0.952 0.008 80);
+  --ink-dim: oklch(0.762 0.011 70);
+  --ink-faint: oklch(0.585 0.011 65);
+  --signal: oklch(0.755 0.132 60);
+  --signal-dim: oklch(0.615 0.105 58);
+  --signal-wash: oklch(0.755 0.132 60 / 0.13);
+  --mark: oklch(0.90 0.018 85);
+  --alert: oklch(0.655 0.155 28);
+  --alert-wash: oklch(0.655 0.155 28 / 0.14);
+  --good: oklch(0.745 0.095 152);
+
+  --display: "Bricolage Grotesque", ui-sans-serif, sans-serif;
+  --text: "Archivo", ui-sans-serif, sans-serif;
+
+  --t-2xs: clamp(0.625rem, 0.61rem + 0.08vw, 0.6875rem);
+  --t-xs: clamp(0.6875rem, 0.665rem + 0.11vw, 0.75rem);
+  --t-sm: clamp(0.8125rem, 0.79rem + 0.11vw, 0.875rem);
+  --t-base: clamp(0.9375rem, 0.915rem + 0.11vw, 1rem);
+  --t-lg: clamp(1.0625rem, 1.01rem + 0.28vw, 1.25rem);
+  --t-xl: clamp(1.375rem, 1.2rem + 0.85vw, 1.875rem);
+  --t-2xl: clamp(1.875rem, 1.5rem + 1.85vw, 2.875rem);
+
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 24px;
+  --s-6: 32px;
+  --s-7: 48px;
+
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html[data-trialr-theme="light"] {
+  color-scheme: light;
+
+  --ground: oklch(0.972 0.007 85);
+  --surface: oklch(0.992 0.004 85);
+  --surface-lift: oklch(0.951 0.008 82);
+  --edge: oklch(0.876 0.010 78);
+  --edge-strong: oklch(0.775 0.014 72);
+  --ink: oklch(0.235 0.014 55);
+  --ink-dim: oklch(0.455 0.014 60);
+  --ink-faint: oklch(0.605 0.012 62);
+  --signal: oklch(0.545 0.155 48);
+  --signal-dim: oklch(0.465 0.135 46);
+  --signal-wash: oklch(0.545 0.155 48 / 0.10);
+  --mark: oklch(0.32 0.02 55);
+  --alert: oklch(0.505 0.175 27);
+  --alert-wash: oklch(0.505 0.175 27 / 0.09);
+  --good: oklch(0.505 0.115 152);
+}
+
+.trialr-body {
+  background: var(--ground);
+}
+
+/* ─── Shell ─────────────────────────────────────────────────────────────── */
+
+.app-studio,
+.experiments-page-studio,
+.experiment-modal-studio,
+.auth-screen-studio {
+  font-family: var(--text);
+  color: var(--ink);
+  letter-spacing: -0.005em;
+}
+
+.app-studio {
+  grid-template-columns: minmax(660px, 1.85fr) minmax(392px, 0.85fr);
+  background: var(--ground);
+}
+
+.app-studio button,
+.app-studio input,
+.app-studio textarea,
+.app-studio select,
+.experiments-page-studio button,
+.experiments-page-studio input,
+.experiment-modal-studio input,
+.experiment-modal-studio textarea,
+.experiment-modal-studio select,
+.experiment-modal-studio button,
+.auth-screen-studio button,
+.auth-screen-studio input {
+  border-radius: 2px;
+  font-family: var(--text);
+}
+
+.app-studio :focus-visible,
+.experiments-page-studio :focus-visible,
+.experiment-modal-studio :focus-visible,
+.auth-screen-studio :focus-visible {
+  outline: 2px solid var(--signal);
+  outline-offset: 2px;
+}
+
+.app-studio .batch-pane {
+  padding: var(--s-5) var(--s-6) var(--s-5);
+  border-right: 1px solid var(--edge);
+  background: var(--ground);
+}
+
+.app-studio .publish-pane {
+  padding: var(--s-5) var(--s-5) var(--s-4);
+  border-left: 0;
+  background: var(--surface);
+}
+
+/* ─── Topbar ────────────────────────────────────────────────────────────── */
+
+.app-studio .topbar,
+.experiments-page-studio .experiments-topbar {
+  min-height: 40px;
+  margin-bottom: var(--s-6);
+  gap: var(--s-5);
+  padding-bottom: var(--s-3);
+  border-bottom: 1px solid var(--edge);
+}
+
+.app-studio .wordmark,
+.experiments-page-studio .wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: var(--display);
+  font-optical-sizing: auto;
+  font-size: var(--t-lg);
+  font-weight: 600;
+  font-style: normal;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.brand-mark {
+  width: 22px;
+  height: 22px;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid var(--edge-strong);
+  border-radius: 2px;
+  color: var(--signal);
+  background: transparent;
+  transition: border-color 220ms var(--ease), color 220ms var(--ease);
+}
+
+.app-studio .wordmark:hover .brand-mark,
+.experiments-page-studio .wordmark:hover .brand-mark {
+  border-color: var(--signal);
+}
+
+.app-studio .topbar-actions {
+  margin-left: auto;
+  gap: var(--s-2);
+}
+
+.experiments-topbar-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+}
+
+.theme-toggle {
+  height: 30px;
+  display: inline-flex;
+  align-items: stretch;
+  border: 1px solid var(--edge);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.theme-option {
+  width: 30px;
+  min-width: 30px;
+  padding: 0;
+  border: 0;
+  display: inline-grid;
+  place-items: center;
+  color: var(--ink-faint);
+  background: transparent;
+  cursor: pointer;
+  transition: color 180ms var(--ease), background 180ms var(--ease);
+}
+
+.theme-option:hover {
+  color: var(--ink);
+}
+
+.theme-option-active,
+.theme-option-active:hover {
+  color: var(--signal);
+  background: var(--surface-lift);
+}
+
+/* Buttons: exactly one loud thing per screen, everything else is quiet. */
+
+.app-studio .new-batch,
+.app-studio .tests-nav-button,
+.experiments-page-studio .back-to-publish,
+.experiments-page-studio .new-experiment-button {
+  min-height: 30px;
+  padding: 0 var(--s-3);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--edge);
+  border-radius: 2px;
+  font-family: var(--text);
+  font-size: var(--t-xs);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  text-transform: none;
+  color: var(--ink-dim);
+  background: transparent;
+  cursor: pointer;
+  transition: color 180ms var(--ease), border-color 180ms var(--ease);
+}
+
+.app-studio .new-batch:hover,
+.app-studio .tests-nav-button:hover,
+.experiments-page-studio .back-to-publish:hover,
+.experiments-page-studio .new-experiment-button:hover {
+  border-color: var(--edge-strong);
+  color: var(--ink);
+  background: transparent;
+}
+
+.app-studio .tests-nav-button,
+.experiments-page-studio .new-experiment-button {
+  border-color: var(--edge-strong);
+  color: var(--ink);
+}
+
+.app-studio .tests-nav-button span {
+  min-width: 17px;
+  height: 17px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 2px;
+  font-size: var(--t-2xs);
+  font-variant-numeric: tabular-nums;
+  color: var(--ground);
+  background: var(--signal);
+}
+
+/* ─── Headings ──────────────────────────────────────────────────────────── */
+
+.app-studio .batch-heading {
+  margin: 0 0 var(--s-4);
+  align-items: baseline;
+  gap: var(--s-3);
+}
+
+.app-studio .batch-heading h1,
+.experiments-page-studio .experiments-title h1,
+.experiments-page-studio .experiment-detail-header h2,
+.experiment-modal-studio h2 {
+  font-family: var(--display);
+  font-optical-sizing: auto;
+  font-weight: 600;
+  font-style: normal;
+  letter-spacing: -0.035em;
+  color: var(--ink);
+}
+
+.app-studio .batch-heading h1 {
+  font-size: var(--t-xl);
+  line-height: 1.05;
+}
+
+.app-studio .count-badge {
+  margin-left: 0;
+  padding: 3px 7px;
+  border: 1px solid var(--edge);
+  border-radius: 2px;
+  font-family: var(--text);
+  font-size: var(--t-2xs);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: var(--signal);
+  background: var(--signal-wash);
+}
+
+.app-studio .count-badge-error {
+  border-color: var(--alert);
+  color: var(--alert);
+  background: var(--alert-wash);
+}
+
+/* ─── Dropzone: a viewfinder, not a dashed box ──────────────────────────── */
+
+.app-studio .dropzone {
+  position: relative;
+  min-height: 96px;
+  gap: var(--s-3);
+  border: 1px solid var(--edge);
+  border-radius: 2px;
+  color: var(--ink-dim);
+  background: transparent;
+  transition: border-color 220ms var(--ease), color 220ms var(--ease);
+}
+
+.app-studio .dropzone::before,
+.app-studio .dropzone::after {
+  content: "";
+  position: absolute;
+  width: 15px;
+  height: 15px;
+  border: 1px solid var(--edge-strong);
+  transition: border-color 220ms var(--ease);
+  pointer-events: none;
+}
+
+.app-studio .dropzone::before {
+  top: 7px;
+  left: 7px;
+  border-right: 0;
+  border-bottom: 0;
+}
+
+.app-studio .dropzone::after {
+  right: 7px;
+  bottom: 7px;
+  border-top: 0;
+  border-left: 0;
+}
+
+.app-studio .dropzone:hover:not(:disabled),
+.app-studio .dropzone-active {
+  border-color: var(--signal-dim);
+  color: var(--ink);
+  background: var(--signal-wash);
+}
+
+.app-studio .dropzone:hover:not(:disabled)::before,
+.app-studio .dropzone:hover:not(:disabled)::after,
+.app-studio .dropzone-active::before,
+.app-studio .dropzone-active::after {
+  border-color: var(--signal);
+}
+
+.app-studio .dropzone > svg {
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  color: var(--ink-faint);
+}
+
+.app-studio .dropzone-copy {
+  gap: 3px;
+}
+
+.app-studio .dropzone-copy strong {
+  font-size: var(--t-sm);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.app-studio .dropzone-copy > span {
+  font-family: var(--text);
+  font-size: var(--t-xs);
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--ink-faint);
+}
+
+/* ─── The strip: queued clips ───────────────────────────────────────────── */
+
+.app-studio .video-list {
+  margin-top: var(--s-5);
+  border: 0;
+  border-top: 1px solid var(--edge);
+  background: transparent;
+}
+
+.app-studio .video-row {
+  min-height: 96px;
+  padding: var(--s-3) var(--s-2) var(--s-3) 0;
+  border-bottom: 1px solid var(--edge);
+  background: transparent;
+  transition: background 200ms var(--ease);
+}
+
+.app-studio .video-row:hover {
+  background: var(--surface);
+}
+
+.app-studio .video-row-dragging {
+  background: var(--signal-wash);
+}
+
+.app-studio .drag-handle,
+.app-studio .icon-button {
+  color: var(--ink-faint);
+  background: transparent;
+  border-radius: 2px;
+  transition: color 180ms var(--ease), background 180ms var(--ease);
+}
+
+.app-studio .drag-handle:hover,
+.app-studio .icon-button:hover {
+  color: var(--ink);
+  background: var(--surface-lift);
+}
+
+.app-studio .delete-button:hover {
+  color: var(--alert);
+}
+
+/* Frames sit slightly proud of the ground and carry a hairline, like a
+   sleeved negative. */
+.app-studio .thumbnail-wrap {
+  width: 52px;
+  height: 92px;
+  border: 1px solid var(--edge-strong);
+  border-radius: 2px;
+  background: var(--ground);
+  overflow: hidden;
+}
+
+.app-studio .duration {
+  right: 3px;
+  bottom: 3px;
+  padding: 1px 4px;
+  border-radius: 1px;
+  font-family: var(--text);
+  font-size: var(--t-2xs);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+  background: oklch(0.155 0.006 55 / 0.82);
+}
+
+.app-studio .preview-overlay {
+  color: var(--ink);
+  background: oklch(0.155 0.006 55 / 0.55);
+}
+
+.app-studio .video-name-button,
+.app-studio .video-name-input {
+  font-family: var(--text);
+  font-size: var(--t-sm);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.app-studio .video-name-button:hover {
+  color: var(--signal);
+}
+
+.app-studio .video-name-input {
+  border: 1px solid var(--signal);
+  border-radius: 2px;
+  background: var(--ground);
+  color: var(--ink);
+}
+
+.app-studio .video-copy > span:not(.progress-track),
+.app-studio .video-footer,
+.app-studio .row-state {
+  font-family: var(--text);
+  font-size: var(--t-xs);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--ink-faint);
+}
+
+.app-studio .video-copy i {
+  font-style: normal;
+  color: var(--edge-strong);
+}
+
+.app-studio .row-state-success {
+  color: var(--good);
+}
+
+.app-studio .row-state-error {
+  color: var(--alert);
+}
+
+.app-studio .row-state-progress {
+  color: var(--signal);
+}
+
+.app-studio .row-error {
+  font-size: var(--t-xs);
+  color: var(--alert);
+}
+
+.app-studio .progress-track {
+  height: 2px;
+  border-radius: 0;
+  background: var(--edge);
+}
+
+.app-studio .progress-track > span {
+  border-radius: 0;
+  background: var(--signal);
+}
+
+.app-studio .empty-state {
+  gap: var(--s-2);
+  padding: var(--s-7) var(--s-4);
+  color: var(--ink-faint);
+}
+
+.app-studio .empty-state span:first-child {
+  font-family: var(--display);
+  font-size: var(--t-lg);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--ink-dim);
+}
+
+.app-studio .empty-state span:last-child {
+  font-size: var(--t-sm);
+}
+
+.app-studio .video-footer {
+  padding-top: var(--s-3);
+  border-top: 0;
+}
+
+.app-studio .video-footer button {
+  border: 0;
+  padding: 0;
+  color: var(--ink-dim);
+  background: none;
+  font-size: var(--t-xs);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.app-studio .video-footer button:hover {
+  color: var(--alert);
+}
+
+/* ─── Dispatch panel ────────────────────────────────────────────────────── */
+
+.studio-panel-head {
+  margin-bottom: var(--s-5);
+  padding-bottom: var(--s-4);
+  border-bottom: 1px solid var(--edge);
+}
+
+.studio-panel-head h1 {
+  margin: 0;
+  font-family: var(--display);
+  font-optical-sizing: auto;
+  font-size: var(--t-xl);
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  line-height: 1.05;
+  color: var(--ink);
+}
+
+.studio-panel-head p {
+  margin: var(--s-2) 0 0;
+  max-width: 34ch;
+  font-size: var(--t-sm);
+  line-height: 1.5;
+  color: var(--ink-faint);
+}
+
+/* The base sheet pads these to 36–55px and stacks a divider after each one.
+   Reset to a single rhythm so the panel reads as one column, not five slabs. */
+.app-studio .setting-section,
+.app-studio .account-section,
+.app-studio .experiment-picker-section {
+  margin-bottom: 0;
+  padding-bottom: var(--s-5);
+  border-bottom: 1px solid var(--edge);
+}
+
+.app-studio .setting-section + .setting-section {
+  padding-top: var(--s-5);
+}
+
+.app-studio .trial-section {
+  border-bottom: 0;
+}
+
+.app-studio .section-heading {
+  margin-bottom: var(--s-2);
+  align-items: center;
+}
+
+.app-studio .section-heading h2 {
+  font-family: var(--text);
+  font-size: var(--t-2xs);
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.app-studio .new-test-inline,
+.app-studio .refresh-button {
+  min-height: 24px;
+  padding: 0 var(--s-2);
+  border: 1px solid var(--edge);
+  border-radius: 2px;
+  font-size: var(--t-2xs);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: var(--ink-dim);
+  background: transparent;
+  cursor: pointer;
+}
+
+.app-studio .new-test-inline:hover,
+.app-studio .refresh-button:hover {
+  border-color: var(--signal);
+  color: var(--signal);
+  background: transparent;
+}
+
+.app-studio .experiment-picker-control,
+.app-studio .account-control {
+  min-height: 46px;
+  border: 1px solid var(--edge);
+  border-radius: 2px;
+  background: var(--ground);
+  color: var(--ink);
+  transition: border-color 200ms var(--ease);
+}
+
+.app-studio .experiment-picker-control:hover,
+.app-studio .account-control:hover {
+  border-color: var(--edge-strong);
+}
+
+.app-studio .experiment-picker-control select,
+.app-studio .account-control select {
+  font-family: var(--text);
+  font-size: var(--t-base);
+  font-weight: 500;
+  color: var(--ink);
+  background: transparent;
+}
+
+.app-studio .experiment-picker-control select option,
+.app-studio .account-control select option {
+  color: var(--ink);
+  background: var(--surface);
+}
+
+.app-studio .experiment-picker-icon,
+.app-studio .account-avatar {
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--edge);
+  border-radius: 2px;
+  color: var(--signal);
+  background: transparent;
+}
+
+.app-studio .connect-control {
+  cursor: pointer;
+}
+
+.app-studio .connect-control:hover {
+  border-color: var(--signal);
+}
+
+.app-studio .connect-control > span:nth-child(2) {
+  font-size: var(--t-base);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.app-studio .experiment-picker-section > p,
+.app-studio .caption-section > p {
+  margin-top: var(--s-2);
+  font-size: var(--t-xs);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-faint);
+}
+
+.app-studio .experiment-picker-loading,
+.app-studio .account-loading {
+  gap: var(--s-2);
+  font-size: var(--t-sm);
+  color: var(--ink-faint);
+}
+
+.app-studio .create-first-test {
+  min-height: 46px;
+  border: 1px solid var(--edge);
+  border-radius: 2px;
+  font-size: var(--t-sm);
+  font-weight: 600;
+  color: var(--signal);
+  background: transparent;
+  cursor: pointer;
+  transition: border-color 200ms var(--ease), background 200ms var(--ease);
+}
+
+.app-studio .create-first-test:hover {
+  border-color: var(--signal);
+  background: var(--signal-wash);
+}
+
+.app-studio .config-note {
+  margin-top: var(--s-2);
+  gap: 6px;
+  font-size: var(--t-xs);
+  line-height: 1.5;
+  color: var(--ink-faint);
+}
+
+.app-studio .config-note code {
+  padding: 1px 4px;
+  border: 1px solid var(--edge);
+  border-radius: 2px;
+  font-family: var(--text);
+  font-size: var(--t-2xs);
+  font-weight: 600;
+  color: var(--ink-dim);
+  background: var(--ground);
+}
+
+.app-studio .caption-section textarea {
+  min-height: 132px;
+  padding: var(--s-3);
+  border: 1px solid var(--edge);
+  border-radius: 2px;
+  font-family: var(--text);
+  font-size: var(--t-sm);
+  line-height: 1.6;
+  color: var(--ink);
+  background: var(--ground);
+  resize: vertical;
+  transition: border-color 200ms var(--ease);
+}
+
+.app-studio .caption-section textarea:hover {
+  border-color: var(--edge-strong);
+}
+
+.app-studio .caption-section textarea::placeholder {
+  color: var(--ink-faint);
+}
+
+.app-studio .character-count {
+  font-family: var(--text);
+  font-size: var(--t-2xs);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-faint);
+}
+
+.app-studio .character-count.over-limit {
+  color: var(--alert);
+}
+
+.app-studio .info-dot {
+  width: 15px;
+  height: 15px;
+  border: 1px solid var(--edge-strong);
+  border-radius: 50%;
+  font-size: 9px;
+  font-style: normal;
+  color: var(--ink-faint);
+  background: transparent;
+}
+
+.app-studio .trial-setting {
+  gap: var(--s-3);
+  padding: var(--s-3);
+  border: 1px solid var(--edge);
+  border-radius: 2px;
+  background: var(--ground);
+}
+
+.app-studio .trial-setting > svg:first-child {
+  width: 26px;
+  height: 26px;
+  color: var(--signal);
+}
+
+.app-studio .trial-setting strong {
+  font-size: var(--t-sm);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.app-studio .trial-setting span {
+  font-size: var(--t-xs);
+  line-height: 1.5;
+  color: var(--ink-faint);
+}
+
+.app-studio .trial-setting > svg:last-child {
+  color: var(--ink-faint);
+}
+
+/* The single loud element in the app. */
+.app-studio .publish-button {
+  min-height: 54px;
+  gap: var(--s-2);
+  border: 1px solid var(--signal);
+  border-radius: 2px;
+  font-family: var(--text);
+  font-size: var(--t-base);
+  font-weight: 600;
+  letter-spacing: 0.005em;
+  color: var(--ground);
+  background: var(--signal);
+  cursor: pointer;
+  transition: background 200ms var(--ease), transform 200ms var(--ease);
+}
+
+.app-studio .publish-button:hover:not(:disabled) {
+  background: color-mix(in oklch, var(--signal) 88%, var(--ink));
+}
+
+.app-studio .publish-button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.app-studio .publish-button:disabled {
+  border-color: var(--edge);
+  color: var(--ink-faint);
+  background: transparent;
+  cursor: not-allowed;
+}
+
+.app-studio .publish-area {
+  padding-top: var(--s-4);
+  border-top: 1px solid var(--edge);
+  background: transparent;
+}
+
+.app-studio .publish-area > p {
+  margin-top: var(--s-3);
+  font-size: var(--t-xs);
+  line-height: 1.6;
+  color: var(--ink-faint);
+}
+
+/* ─── Notices ───────────────────────────────────────────────────────────── */
+
+.app-studio .notice,
+.experiments-page-studio .experiments-notice {
+  gap: var(--s-2);
+  padding: var(--s-3);
+  border: 1px solid var(--edge);
+  border-radius: 2px;
+  font-size: var(--t-sm);
+  color: var(--ink);
+  background: var(--surface-lift);
+}
+
+.app-studio .notice-success,
+.experiments-page-studio .notice-success {
+  border-color: color-mix(in oklch, var(--good) 45%, transparent);
+  color: var(--good);
+  background: color-mix(in oklch, var(--good) 10%, transparent);
+}
+
+.app-studio .notice-error,
+.experiments-page-studio .notice-error {
+  border-color: color-mix(in oklch, var(--alert) 50%, transparent);
+  color: var(--alert);
+  background: var(--alert-wash);
+}
+
+.app-studio .notice-info,
+.experiments-page-studio .notice-info {
+  border-color: color-mix(in oklch, var(--signal) 45%, transparent);
+  color: var(--signal);
+  background: var(--signal-wash);
+}
+
+.app-studio .notice button,
+.experiments-page-studio .experiments-notice button {
+  color: inherit;
+  background: none;
+  border: 0;
+  opacity: 0.7;
+  cursor: pointer;
+}
+
+.app-studio .notice button:hover,
+.experiments-page-studio .experiments-notice button:hover {
+  opacity: 1;
+}
+
+/* ─── Modal ─────────────────────────────────────────────────────────────── */
+
+.experiment-modal-backdrop {
+  background: oklch(0.10 0.005 55 / 0.72);
+  backdrop-filter: none;
+}
+
+.experiment-modal-studio {
+  border: 1px solid var(--edge-strong);
+  border-radius: 2px;
+  background: var(--surface);
+  box-shadow: none;
+}
+
+.experiment-modal-studio h2 {
+  font-size: var(--t-lg);
+}
+
+.experiment-modal-studio label span {
+  font-family: var(--text);
+  font-size: var(--t-2xs);
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.experiment-modal-studio input,
+.experiment-modal-studio textarea,
+.experiment-modal-studio select {
+  border: 1px solid var(--edge);
+  border-radius: 2px;
+  font-family: var(--text);
+  font-size: var(--t-sm);
+  color: var(--ink);
+  background: var(--ground);
+}
+
+.experiment-modal-studio select option {
+  background: var(--surface);
+}
+
+.experiment-modal-studio .experiment-modal-actions button[type="submit"] {
+  border: 1px solid var(--signal);
+  border-radius: 2px;
+  font-weight: 600;
+  color: var(--ground);
+  background: var(--signal);
+}
+
+.experiment-modal-studio .experiment-modal-actions button[type="button"] {
+  border: 1px solid var(--edge);
+  border-radius: 2px;
+  color: var(--ink-dim);
+  background: transparent;
+}
+
+.experiment-modal-studio .experiment-modal-header button {
+  color: var(--ink-faint);
+  background: none;
+  border: 0;
+}
+
+/* ─── Tests ─────────────────────────────────────────────────────────────── */
+
+.experiments-page-studio {
+  background: var(--ground);
+  color: var(--ink);
+}
+
+.experiments-page-studio .experiments-layout {
+  border: 1px solid var(--edge);
+  border-radius: 2px;
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.experiments-page-studio .experiment-list-pane {
+  padding: var(--s-5);
+  border-right: 1px solid var(--edge);
+  background: var(--ground);
+}
+
+.experiments-page-studio .experiments-title {
+  gap: var(--s-3);
+  margin-bottom: var(--s-5);
+}
+
+.experiments-page-studio .experiment-title-icon {
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--edge-strong);
+  border-radius: 2px;
+  color: var(--signal);
+  background: transparent;
+}
+
+.experiments-page-studio .experiments-title h1 {
+  font-size: var(--t-lg);
+}
+
+.experiments-page-studio .experiments-title p {
+  margin-top: 3px;
+  font-size: var(--t-xs);
+  line-height: 1.5;
+  color: var(--ink-faint);
+}
+
+.experiments-page-studio .experiment-list-item {
+  padding: var(--s-3) var(--s-3) var(--s-3) var(--s-4);
+  border: 0;
+  border-bottom: 1px solid var(--edge);
+  border-left: 2px solid transparent;
+  border-radius: 0;
+  background: transparent;
+  cursor: pointer;
+  transition: background 200ms var(--ease), border-color 200ms var(--ease);
+}
+
+.experiments-page-studio .experiment-list-item:hover {
+  background: var(--surface);
+}
+
+.experiments-page-studio .experiment-list-item-active {
+  border-left-color: var(--signal);
+  background: var(--surface);
+}
+
+.experiments-page-studio .experiment-list-item strong {
+  font-family: var(--display);
+  font-optical-sizing: auto;
+  font-size: var(--t-base);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.experiments-page-studio .experiment-list-item span {
+  font-size: var(--t-xs);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-faint);
+}
+
+.experiments-page-studio .experiment-list-empty {
+  padding: var(--s-5) 0;
+  font-size: var(--t-sm);
+  line-height: 1.6;
+  color: var(--ink-faint);
+}
+
+.experiments-page-studio .experiment-detail-pane {
+  padding: var(--s-5) var(--s-6);
+  background: var(--surface);
+}
+
+.experiments-page-studio .experiment-detail-header {
+  margin-bottom: var(--s-5);
+  padding-bottom: var(--s-4);
+  border-bottom: 1px solid var(--edge);
+}
+
+.experiments-page-studio .eyebrow {
+  font-family: var(--text);
+  font-size: var(--t-2xs);
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.experiments-page-studio .experiment-detail-header h2 {
+  margin-top: var(--s-1);
+  font-size: var(--t-xl);
+  line-height: 1.05;
+}
+
+.experiments-page-studio .experiment-detail-header p {
+  margin-top: 6px;
+  font-size: var(--t-sm);
+  line-height: 1.55;
+  color: var(--ink-faint);
+}
+
+.experiments-page-studio .experiment-detail-actions > button {
+  min-height: 34px;
+  padding: 0 var(--s-3);
+  border: 1px solid var(--edge);
+  border-radius: 2px;
+  font-family: var(--text);
+  font-size: var(--t-xs);
+  font-weight: 500;
+  color: var(--ink-dim);
+  background: transparent;
+}
+
+.experiments-page-studio .experiment-detail-actions > button:hover:not(:disabled) {
+  border-color: var(--edge-strong);
+  color: var(--ink);
+  background: transparent;
+}
+
+.experiments-page-studio .experiment-detail-actions .delete-experiment-button {
+  padding: 0 var(--s-2);
+  border-color: var(--edge);
+  color: var(--ink-faint);
+  background: transparent;
+}
+
+.experiments-page-studio .experiment-detail-actions .delete-experiment-button:hover:not(:disabled) {
+  border-color: var(--alert);
+  color: var(--alert);
+  background: var(--alert-wash);
+}
+
+/* Readings, not "stat cards": hairline-separated columns. */
+.experiments-page-studio .experiment-summary-grid {
+  gap: 0;
+  margin-bottom: var(--s-6);
+  border: 0;
+  border-top: 1px solid var(--edge);
+  border-bottom: 1px solid var(--edge);
+  background: transparent;
+}
+
+.experiments-page-studio .experiment-summary-grid > div {
+  padding: var(--s-3) var(--s-4) var(--s-3) 0;
+  border: 0;
+  border-right: 1px solid var(--edge);
+  background: transparent;
+}
+
+.experiments-page-studio .experiment-summary-grid > div:not(:first-child) {
+  padding-left: var(--s-4);
+}
+
+.experiments-page-studio .experiment-summary-grid > div:last-child {
+  border-right: 0;
+}
+
+.experiments-page-studio .experiment-summary-grid span {
+  font-family: var(--text);
+  font-size: var(--t-2xs);
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.experiments-page-studio .experiment-summary-grid strong {
+  margin-top: 5px;
+  font-family: var(--display);
+  font-optical-sizing: auto;
+  font-size: var(--t-lg);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.experiments-page-studio .variant-results-heading h3 {
+  font-family: var(--display);
+  font-optical-sizing: auto;
+  font-size: var(--t-lg);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  color: var(--ink);
+}
+
+.experiments-page-studio .variant-results-heading p {
+  margin-top: 3px;
+  font-size: var(--t-xs);
+  color: var(--ink-faint);
+}
+
+.experiments-page-studio .variant-results {
+  gap: 0;
+  margin-top: var(--s-4);
+  border-top: 1px solid var(--edge);
+}
+
+/* Contact sheet: each variant is a frame with its readings alongside. */
+.experiments-page-studio .variant-result {
+  position: relative;
+  gap: var(--s-4);
+  padding: var(--s-4) var(--s-3) var(--s-4) 0;
+  border: 0;
+  border-bottom: 1px solid var(--edge);
+  border-radius: 0;
+  background: transparent;
+  transition: background 200ms var(--ease);
+}
+
+.experiments-page-studio .variant-result:hover {
+  background: var(--surface-lift);
+}
+
+/* The keeper, ringed like a frame marked on a contact sheet. */
+.experiments-page-studio .variant-result-leading::before,
+.experiments-page-studio .variant-result-leading::after {
+  content: "";
+  position: absolute;
+  width: 11px;
+  height: 11px;
+  border: 1px solid var(--signal);
+  pointer-events: none;
+}
+
+.experiments-page-studio .variant-result-leading::before {
+  top: 8px;
+  left: -6px;
+  border-right: 0;
+  border-bottom: 0;
+}
+
+.experiments-page-studio .variant-result-leading::after {
+  right: 2px;
+  bottom: 8px;
+  border-top: 0;
+  border-left: 0;
+}
+
+.experiments-page-studio .variant-media {
+  width: 58px;
+  height: 103px;
+  border: 1px solid var(--edge-strong);
+  border-radius: 2px;
+  background: var(--ground);
+  overflow: hidden;
+}
+
+.experiments-page-studio .variant-result-leading .variant-media {
+  border-color: var(--signal);
+}
+
+.experiments-page-studio .variant-media-fallback {
+  color: var(--ink-faint);
+  background: var(--surface-lift);
+}
+
+.experiments-page-studio .variant-media-open {
+  color: var(--ink);
+  background: oklch(0.155 0.006 55 / 0.6);
+}
+
+.experiments-page-studio .variant-identity strong {
+  font-family: var(--display);
+  font-optical-sizing: auto;
+  font-size: var(--t-base);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.experiments-page-studio .variant-identity span {
+  margin-top: 3px;
+  font-size: var(--t-xs);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-faint);
+}
+
+.experiments-page-studio .variant-identity-link:hover strong {
+  color: var(--signal);
+}
+
+.experiments-page-studio .variant-primary-metric span {
+  font-family: var(--text);
+  font-size: var(--t-2xs);
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.experiments-page-studio .variant-primary-metric strong {
+  margin-top: 3px;
+  font-family: var(--display);
+  font-optical-sizing: auto;
+  font-size: var(--t-xl);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+}
+
+.experiments-page-studio .variant-result-leading .variant-primary-metric strong {
+  color: var(--signal);
+}
+
+.experiments-page-studio .variant-secondary-metrics {
+  gap: var(--s-4);
+}
+
+.experiments-page-studio .variant-secondary-metrics span {
+  font-size: var(--t-2xs);
+  letter-spacing: 0.02em;
+  color: var(--ink-faint);
+}
+
+.experiments-page-studio .variant-secondary-metrics strong {
+  font-size: var(--t-sm);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-dim);
+}
+
+.experiments-page-studio .leader-badge {
+  gap: 5px;
+  padding: 3px 8px;
+  border: 1px solid var(--signal);
+  border-radius: 2px;
+  font-family: var(--text);
+  font-size: var(--t-2xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--signal);
+  background: transparent;
+}
+
+.experiments-page-studio .variant-empty-state,
+.experiments-page-studio .experiment-detail-empty {
+  gap: var(--s-3);
+  padding: var(--s-7) var(--s-4);
+  color: var(--ink-faint);
+}
+
+.experiments-page-studio .variant-empty-state svg,
+.experiments-page-studio .experiment-detail-empty svg {
+  color: var(--edge-strong);
+}
+
+.experiments-page-studio .variant-empty-state strong,
+.experiments-page-studio .experiment-detail-empty h2 {
+  font-family: var(--display);
+  font-optical-sizing: auto;
+  font-size: var(--t-lg);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  color: var(--ink-dim);
+}
+
+.experiments-page-studio .variant-empty-state span,
+.experiments-page-studio .experiment-detail-empty p {
+  max-width: 46ch;
+  font-size: var(--t-sm);
+  line-height: 1.6;
+  color: var(--ink-faint);
+}
+
+.experiments-page-studio .variant-empty-state button,
+.experiments-page-studio .experiment-detail-empty button {
+  min-height: 36px;
+  padding: 0 var(--s-4);
+  border: 1px solid var(--edge-strong);
+  border-radius: 2px;
+  font-size: var(--t-xs);
+  font-weight: 600;
+  color: var(--ink);
+  background: transparent;
+  cursor: pointer;
+}
+
+.experiments-page-studio .variant-empty-state button:hover,
+.experiments-page-studio .experiment-detail-empty button:hover {
+  border-color: var(--signal);
+  color: var(--signal);
+}
+
+/* ─── Delete confirmation ───────────────────────────────────────────────── */
+
+.experiments-page-studio .delete-confirm {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-3);
+  margin: calc(var(--s-4) * -1) 0 var(--s-5);
+  padding: var(--s-3) var(--s-4);
+  border: 1px solid color-mix(in oklch, var(--alert) 55%, transparent);
+  border-radius: 2px;
+  background: var(--alert-wash);
+}
+
+.experiments-page-studio .delete-confirm > svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+  color: var(--alert);
+}
+
+.experiments-page-studio .delete-confirm-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.experiments-page-studio .delete-confirm-copy strong {
+  font-size: var(--t-sm);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.experiments-page-studio .delete-confirm-copy span {
+  font-size: var(--t-xs);
+  line-height: 1.55;
+  color: var(--ink-dim);
+}
+
+.experiments-page-studio .delete-confirm-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  margin-left: auto;
+}
+
+.experiments-page-studio .delete-confirm-actions button {
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 var(--s-3);
+  border: 1px solid var(--edge-strong);
+  border-radius: 2px;
+  font-family: var(--text);
+  font-size: var(--t-xs);
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  white-space: nowrap;
+  color: var(--ink-dim);
+  background: transparent;
+  cursor: pointer;
+}
+
+.experiments-page-studio .delete-confirm-actions button:hover:not(:disabled) {
+  color: var(--ink);
+}
+
+.experiments-page-studio .delete-confirm-actions .delete-confirm-go {
+  border-color: var(--alert);
+  color: var(--ink);
+  background: color-mix(in oklch, var(--alert) 80%, transparent);
+}
+
+.experiments-page-studio .delete-confirm-actions .delete-confirm-go:hover:not(:disabled) {
+  background: var(--alert);
+}
+
+.experiments-page-studio .delete-confirm-actions button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* ─── Preview lightbox ──────────────────────────────────────────────────── */
+
+.preview-lightbox {
+  background: oklch(0.10 0.005 55 / 0.86);
+}
+
+.app-studio .preview-dialog,
+.preview-dialog {
+  border: 1px solid var(--edge-strong);
+  border-radius: 2px;
+  background: var(--surface);
+  box-shadow: none;
+}
+
+.preview-header strong {
+  font-family: var(--display);
+  font-size: var(--t-sm);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.preview-header button {
+  color: var(--ink-faint);
+  background: none;
+  border: 0;
+}
+
+.preview-header button:hover {
+  color: var(--ink);
+}
+
+/* ─── Sign in ───────────────────────────────────────────────────────────── */
+
+.auth-screen-studio {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--s-5);
+  background: var(--ground);
+  color: var(--ink);
+}
+
+.auth-screen-studio .auth-panel {
+  width: min(384px, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+  padding: var(--s-6);
+  border: 1px solid var(--edge);
+  border-radius: 2px;
+  background: var(--surface);
+}
+
+.auth-screen-studio .auth-mark {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  margin-bottom: var(--s-2);
+  border: 1px solid var(--edge-strong);
+  border-radius: 2px;
+  color: var(--signal);
+}
+
+.auth-screen-studio h1 {
+  margin: 0;
+  font-family: var(--display);
+  font-optical-sizing: auto;
+  font-size: var(--t-xl);
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  line-height: 1.05;
+  color: var(--ink);
+}
+
+.auth-screen-studio .auth-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  margin: 0;
+  font-size: var(--t-sm);
+  line-height: 1.5;
+  color: var(--ink-faint);
+}
+
+.auth-screen-studio .auth-note.auth-error {
+  color: var(--alert);
+}
+
+.auth-screen-studio .auth-note svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.auth-screen-studio .auth-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: var(--s-2);
+}
+
+.auth-screen-studio .auth-field span {
+  font-family: var(--text);
+  font-size: var(--t-2xs);
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.auth-screen-studio .auth-field input {
+  padding: var(--s-3);
+  border: 1px solid var(--edge);
+  border-radius: 2px;
+  font-family: var(--text);
+  font-size: var(--t-base);
+  color: var(--ink);
+  background: var(--ground);
+  transition: border-color 200ms var(--ease);
+}
+
+.auth-screen-studio .auth-field input:hover {
+  border-color: var(--edge-strong);
+}
+
+.auth-screen-studio .auth-submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  margin-top: var(--s-2);
+  padding: var(--s-3) var(--s-4);
+  border: 1px solid var(--signal);
+  border-radius: 2px;
+  font-family: var(--text);
+  font-size: var(--t-sm);
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--ground);
+  background: var(--signal);
+  cursor: pointer;
+  transition: background 200ms var(--ease);
+}
+
+.auth-screen-studio .auth-submit:hover:not(:disabled) {
+  background: color-mix(in oklch, var(--signal) 88%, var(--ink));
+}
+
+.auth-screen-studio .auth-submit:disabled {
+  border-color: var(--edge);
+  color: var(--ink-faint);
+  background: transparent;
+  cursor: default;
+}
+
+/* ─── Motion ────────────────────────────────────────────────────────────── */
+
+/* Transform only, never opacity. A backgrounded tab pauses CSS animations, and
+   anything that faded in from opacity 0 would stay invisible for as long as the
+   tab stayed hidden. Settling a few pixels is a safe worst case; blank rows are
+   not. */
+@keyframes frame-in {
+  from {
+    transform: translateY(7px);
+  }
+  to {
+    transform: none;
+  }
+}
+
+.app-studio .video-row,
+.experiments-page-studio .variant-result {
+  animation: frame-in 420ms var(--ease) both;
+}
+
+.app-studio .video-row:nth-child(2),
+.experiments-page-studio .variant-result:nth-child(2) {
+  animation-delay: 40ms;
+}
+
+.app-studio .video-row:nth-child(3),
+.experiments-page-studio .variant-result:nth-child(3) {
+  animation-delay: 80ms;
+}
+
+.app-studio .video-row:nth-child(4),
+.experiments-page-studio .variant-result:nth-child(4) {
+  animation-delay: 120ms;
+}
+
+.app-studio .video-row:nth-child(n + 5),
+.experiments-page-studio .variant-result:nth-child(n + 5) {
+  animation-delay: 160ms;
+}
+
+.auth-screen-studio .auth-panel {
+  animation: frame-in 520ms var(--ease) both;
+}
+
+/* Guarantee the resting state even if an animation is paused or never runs. */
+.app-studio .video-row,
+.experiments-page-studio .variant-result,
+.auth-screen-studio .auth-panel {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-studio .video-row,
+  .experiments-page-studio .variant-result,
+  .auth-screen-studio .auth-panel {
+    animation: none;
+  }
+
+  .app-studio *,
+  .experiments-page-studio * {
+    transition-duration: 1ms !important;
+  }
+}
+
+/* ─── Responsive ────────────────────────────────────────────────────────── */
+
+@media (max-width: 1080px) {
+  .app-studio {
+    grid-template-columns: 1fr;
+  }
+
+  .app-studio .batch-pane {
+    border-right: 0;
+    border-bottom: 1px solid var(--edge);
+  }
+}
+
+@media (max-width: 900px) {
+  .experiments-page-studio .experiment-list-pane {
+    border-right: 0;
+    border-bottom: 1px solid var(--edge);
+  }
+
+  .experiments-page-studio .experiment-detail-pane {
+    padding: var(--s-5) var(--s-4);
+  }
+
+  .experiments-page-studio .delete-confirm {
+    flex-wrap: wrap;
+  }
+
+  .experiments-page-studio .delete-confirm-actions {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .experiments-page-studio .experiment-summary-grid > div {
+    border-right: 0;
+    border-bottom: 1px solid var(--edge);
+    padding-left: 0 !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .app-studio .batch-pane,
+  .app-studio .publish-pane {
+    padding: var(--s-4);
+  }
+
+  .app-studio .topbar,
+  .experiments-page-studio .experiments-topbar {
+    flex-wrap: wrap;
+    gap: var(--s-3);
+  }
+}

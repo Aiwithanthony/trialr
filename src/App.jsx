@@ -10,7 +10,6 @@ import {
   IconFlask,
   IconGripVertical,
   IconLoader2,
-  IconPointFilled,
   IconPlus,
   IconRefresh,
   IconSchool,
@@ -263,8 +262,8 @@ export function App() {
   }, [isDemo]);
 
   useEffect(() => {
-    document.body.classList.add("trialr-v2-body");
-    return () => document.body.classList.remove("trialr-v2-body");
+    document.body.classList.add("trialr-body");
+    return () => document.body.classList.remove("trialr-body");
   }, []);
 
   useEffect(() => {
@@ -671,8 +670,8 @@ export function App() {
   });
 
   const newExperimentModal = showNewExperiment && (
-    <div className="experiment-modal-backdrop experiment-modal-backdrop-v2" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setShowNewExperiment(false); }}>
-      <form className="experiment-modal experiment-modal-v2" onSubmit={createExperiment} aria-label="Create a new test">
+    <div className="experiment-modal-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setShowNewExperiment(false); }}>
+      <form className="experiment-modal experiment-modal-studio" onSubmit={createExperiment} aria-label="Create a new test">
         <div className="experiment-modal-header">
           <div><span className="eyebrow">New experiment</span><h2>Create a test</h2></div>
           <button type="button" onClick={() => setShowNewExperiment(false)} aria-label="Close new test"><IconX size={21} /></button>
@@ -724,11 +723,11 @@ export function App() {
 
   return (
     <>
-    <main className="app-shell app-v2">
+    <main className="app-shell app-studio">
       <section className="batch-pane" aria-label="Trial Reel batch">
         <header className="topbar">
           <button className="wordmark" type="button" onClick={newBatch} aria-label="Start a new Trialr batch">
-            <span className="v2-brand-mark"><IconBrandInstagram size={16} stroke={1.7} /></span>
+            <span className="brand-mark"><IconBrandInstagram size={16} stroke={1.7} /></span>
             <span>Trialr</span>
           </button>
           <div className="topbar-actions">
@@ -738,7 +737,6 @@ export function App() {
           </div>
         </header>
 
-        <div className="v2-system-label"><IconPointFilled size={13} /> SYS_TRIAL_READY <span>// 01</span></div>
         <div className="batch-heading">
           <h1>Videos</h1>
           {items.length > 0 && <span className={invalidCount ? "count-badge count-badge-error" : "count-badge"}>{invalidCount ? `${invalidCount} issue${invalidCount === 1 ? "" : "s"}` : `${readyCount} ready`}</span>}
@@ -860,10 +858,9 @@ export function App() {
       </section>
 
       <aside className="publish-pane" aria-label="Publishing settings">
-        <div className="v2-console-header">
-          <span><IconPointFilled size={13} /> PUBLISHING_CONSOLE // V2</span>
-          <strong>Configure <em>dispatch.</em></strong>
-          <p>One controlled batch. One shared caption. Every result tracked.</p>
+        <div className="studio-panel-head">
+          <h1>Dispatch</h1>
+          <p>One batch, one caption, one Reel per video.</p>
         </div>
         <section className="setting-section experiment-picker-section">
           <div className="section-heading">

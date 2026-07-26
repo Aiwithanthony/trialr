@@ -1,17 +1,18 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700&display=swap");
 
 :root {
-  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  color: #121416;
-  background: #fbfaf8;
+  font-family: "Archivo", ui-sans-serif, sans-serif;
+  color: var(--ink);
+  background: var(--ground);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
-  --blue: #0d43e5;
-  --blue-dark: #0739c9;
-  --muted: #6e7177;
-  --line: #dededc;
-  --success: #158427;
-  --danger: #c73535;
+  /* Legacy aliases kept so structural rules below resolve to the studio palette. */
+  --blue: var(--signal);
+  --blue-dark: var(--signal-dim);
+  --muted: var(--ink-dim);
+  --line: var(--edge);
+  --success: var(--good);
+  --danger: var(--alert);
 }
 
 * {
@@ -22,7 +23,7 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background: #fbfaf8;
+  background: var(--ground);
   -webkit-font-smoothing: antialiased;
 }
 

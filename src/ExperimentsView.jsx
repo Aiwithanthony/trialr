@@ -6,10 +6,8 @@ import {
   IconBrandInstagram,
   IconCircleCheck,
   IconExternalLink,
-  IconFlame,
   IconFlask,
   IconLoader2,
-  IconPointFilled,
   IconPlus,
   IconRefresh,
   IconTrash,
@@ -27,6 +25,23 @@ export const METRIC_OPTIONS = [
 
 export function metricLabel(metric) {
   return METRIC_OPTIONS.find(([value]) => value === metric)?.[1] || "Views";
+}
+
+// Column headings have less room than the primary readout above them.
+const SHORT_METRIC_LABELS = {
+  views: "Views",
+  reach: "Reach",
+  igReelsAvgWatchTime: "Avg watch",
+  saves: "Saves",
+  shares: "Shares",
+};
+
+// Whichever metric the test optimises for is already shown large, so the
+// supporting columns skip it rather than printing the same figure twice.
+function supportingMetrics(primaryMetric) {
+  return ["views", "reach", "igReelsAvgWatchTime", "saves", "shares"]
+    .filter((metric) => metric !== primaryMetric)
+    .slice(0, 3);
 }
 
 function formatMetric(metric, value) {
@@ -109,12 +124,13 @@ export function ExperimentsView({
     return Number(variant.analytics?.[metric] || 0) > Number(best.analytics?.[metric] || 0) ? variant : best;
   }, null);
   const lastRefresh = selected ? mostRecentRefresh(selected) : "";
+  const supporting = supportingMetrics(metric);
 
   return (
-    <main className="experiments-page experiments-page-v2">
+    <main className="experiments-page experiments-page-studio">
       <header className="experiments-topbar">
         <button className="wordmark" type="button" onClick={onBack}>
-          <span className="v2-brand-mark"><IconFlask size={16} stroke={1.7} /></span>
+          <span className="brand-mark"><IconFlask size={16} stroke={1.7} /></span>
           <span>Trialr</span>
         </button>
         <button className="back-to-publish" type="button" onClick={onBack}><IconArrowLeft size={18} /> Publish</button>
@@ -123,8 +139,6 @@ export function ExperimentsView({
           <button className="new-experiment-button" type="button" onClick={onNewExperiment}><IconPlus size={18} /> New test</button>
         </div>
       </header>
-
-      <div className="v2-tests-kicker"><IconPointFilled size={13} /> EXPERIMENT_REGISTRY <span>// LIVE DATA</span></div>
 
       {notice && (
         <div className={`experiments-notice notice notice-${notice.type}`} role="status">
@@ -233,12 +247,14 @@ export function ExperimentsView({
                       <strong>{variant.analytics ? formatMetric(metric, variant.analytics[metric]) : "Pending"}</strong>
                     </div>
                     <div className="variant-secondary-metrics">
-                      <span>Views <strong>{variant.analytics ? formatMetric("views", variant.analytics.views) : "--"}</strong></span>
-                      <span>Reach <strong>{variant.analytics ? formatMetric("reach", variant.analytics.reach) : "--"}</strong></span>
-                      <span>Avg watch <strong>{variant.analytics ? formatMetric("igReelsAvgWatchTime", variant.analytics.igReelsAvgWatchTime) : "--"}</strong></span>
+                      {supporting.map((entry) => (
+                        <span key={entry}>
+                          {SHORT_METRIC_LABELS[entry]} <strong>{variant.analytics ? formatMetric(entry, variant.analytics[entry]) : "--"}</strong>
+                        </span>
+                      ))}
                     </div>
                     <div className="variant-result-action">
-                      {leader?.id === variant.id && measured.length > 1 && <span className="leader-badge"><IconFlame size={15} /> Leading</span>}
+                      {leader?.id === variant.id && measured.length > 1 && <span className="leader-badge">Leading</span>}
                     </div>
                   </article>
                 )) : (
