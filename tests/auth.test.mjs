@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { Readable } from "node:stream";
 import test from "node:test";
-import { createAuth } from "../server/auth.mjs";
+import { createAuth, isHostedEnvironment } from "../server/auth.mjs";
 
 function request(method, url, body, headers = {}) {
   const stream = Readable.from(body ? [Buffer.from(JSON.stringify(body))] : []);
@@ -88,6 +88,15 @@ test("deployed without a password locks the API instead of running open", async 
   assert.equal(auth.guard(request("GET", "/api/experiments"), res), true);
   assert.equal(res.statusCode, 503);
   assert.equal(res.body.code, "AUTH_NOT_CONFIGURED");
+});
+
+test("any RAILWAY_* variable marks the environment as hosted", () => {
+  assert.equal(isHostedEnvironment({ PATH: "/usr/bin" }), false);
+  // Railway does not inject a plain RAILWAY_ENVIRONMENT on every plan, so the
+  // named and id variants have to count too.
+  assert.equal(isHostedEnvironment({ RAILWAY_ENVIRONMENT_NAME: "production" }), true);
+  assert.equal(isHostedEnvironment({ RAILWAY_ENVIRONMENT_ID: "0655c80f" }), true);
+  assert.equal(isHostedEnvironment({ RAILWAY_SERVICE_ID: "ea4fee5f" }), true);
 });
 
 test("repeated failed logins are rate limited", async () => {

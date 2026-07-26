@@ -44,9 +44,15 @@ function isSecureRequest(request) {
   return request.headers?.["x-forwarded-proto"] === "https" || Boolean(request.socket?.encrypted);
 }
 
+export function isHostedEnvironment(env = process.env) {
+  // Railway injects a set of RAILWAY_* variables that varies between plans and
+  // releases, so treat any of them as proof this is not a local run.
+  return Object.keys(env).some((name) => name.startsWith("RAILWAY_"));
+}
+
 export function createAuth({
   password = process.env.TRIALR_PASSWORD || "",
-  deployed = Boolean(process.env.RAILWAY_ENVIRONMENT),
+  deployed = isHostedEnvironment(),
 } = {}) {
   const required = Boolean(password) || deployed;
   const misconfigured = deployed && !password;
