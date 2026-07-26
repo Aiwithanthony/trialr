@@ -5,6 +5,7 @@ import {
   IconAlertTriangle,
   IconBrandInstagram,
   IconCircleCheck,
+  IconDownload,
   IconExternalLink,
   IconFlask,
   IconLoader2,
@@ -13,6 +14,7 @@ import {
   IconTrash,
   IconX,
 } from "@tabler/icons-react";
+import { downloadExperimentReport } from "./report.js";
 import { ThemeToggle } from "./ThemeToggle.jsx";
 
 export const METRIC_OPTIONS = [
@@ -184,6 +186,15 @@ export function ExperimentsView({
                   <button type="button" onClick={() => onRefreshExperiment(selected.id)} disabled={!selected.variants.length || refreshingExperimentId === selected.id}>
                     {refreshingExperimentId === selected.id ? <IconLoader2 className="spin" size={19} /> : <IconRefresh size={19} />}
                     Refresh stats
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => downloadExperimentReport(selected)}
+                    disabled={!selected.variants.length}
+                    title={selected.variants.length ? "Download an HTML report for this test" : "Publish variants into this test first"}
+                  >
+                    <IconDownload size={19} />
+                    Report
                   </button>
                   <button
                     className="delete-experiment-button"
