@@ -18,13 +18,17 @@
   --ink: oklch(0.952 0.008 80);
   --ink-dim: oklch(0.762 0.011 70);
   --ink-faint: oklch(0.585 0.011 65);
-  --signal: oklch(0.755 0.132 60);
-  --signal-dim: oklch(0.615 0.105 58);
-  --signal-wash: oklch(0.755 0.132 60 / 0.13);
-  --mark: oklch(0.90 0.018 85);
+  /* Instrument green, the colour of a waveform monitor in a dim suite. Held at
+     8.9:1 on the ground so it carries the same optical weight the amber did —
+     a brighter, more chromatic green would tip into neon-on-black. */
+  --signal: oklch(0.74 0.125 152);
+  --signal-dim: oklch(0.60 0.10 152);
+  --signal-wash: oklch(0.74 0.125 152 / 0.13);
   --alert: oklch(0.655 0.155 28);
   --alert-wash: oklch(0.655 0.155 28 / 0.14);
-  --good: oklch(0.745 0.095 152);
+  /* Same family as the signal, deliberately quieter: a row reading "Ready" is
+     reporting a fact, not asking to be acted on. */
+  --good: oklch(0.695 0.085 155);
 
   --display: "Bricolage Grotesque", ui-sans-serif, sans-serif;
   --text: "Archivo", ui-sans-serif, sans-serif;
@@ -59,13 +63,19 @@ html[data-trialr-theme="light"] {
   --ink: oklch(0.235 0.014 55);
   --ink-dim: oklch(0.455 0.014 60);
   --ink-faint: oklch(0.605 0.012 62);
-  --signal: oklch(0.545 0.155 48);
-  --signal-dim: oklch(0.465 0.135 46);
-  --signal-wash: oklch(0.545 0.155 48 / 0.10);
-  --mark: oklch(0.32 0.02 55);
-  --alert: oklch(0.505 0.175 27);
-  --alert-wash: oklch(0.505 0.175 27 / 0.09);
-  --good: oklch(0.505 0.115 152);
+  /* Light needs a deep ink green, not a bright one: the publish button puts
+     paper-coloured text on this fill, which only clears AA once the green is
+     dark enough. 6.1:1 here. */
+  --signal: oklch(0.46 0.13 152);
+  --signal-dim: oklch(0.385 0.11 152);
+  --signal-wash: oklch(0.46 0.13 152 / 0.10);
+  /* Held darker than the signal green on purpose. Green and red at matching
+     luminance are the one pair red-green colour blindness cannot separate, and
+     light mode had them at 1.04:1. Icons and wording already carry the meaning;
+     this makes the two differ in greyscale as well. */
+  --alert: oklch(0.425 0.185 27);
+  --alert-wash: oklch(0.425 0.185 27 / 0.09);
+  --good: oklch(0.45 0.095 155);
 }
 
 .trialr-body {
