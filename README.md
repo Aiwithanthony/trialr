@@ -99,6 +99,18 @@ Publishing is real. Clicking the publish button sends each ready video to the se
 - Maximum 10 videos per batch
 - Captions up to 2,200 characters
 
+## Password protection and hosting
+
+Trialr runs unlocked on your own machine by default. To require a password, add one to `.env` and restart:
+
+```dotenv
+TRIALR_PASSWORD=choose_a_long_passphrase
+```
+
+Every page and API request then requires signing in once per browser (the session lasts 30 days).
+
+When Trialr detects it is running on Railway, the password becomes mandatory: without `TRIALR_PASSWORD` the API locks itself instead of running open to the internet. A hosted deployment needs three things: the `ZERNIO_API_KEY` and `TRIALR_PASSWORD` environment variables, and a persistent volume mounted at `data/` so experiment history survives redeploys.
+
 ## Local data and privacy
 
 - Your Zernio API key stays in the local Node server and is never sent to the browser.
