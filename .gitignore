@@ -8,3 +8,4 @@ dist
 coverage
 data/experiments.json
 data/experiments.json.tmp
+.firecrawl
