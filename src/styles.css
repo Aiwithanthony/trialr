@@ -145,6 +145,12 @@ input:focus-visible {
   justify-content: space-between;
 }
 
+.section-heading-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .batch-heading {
   justify-content: flex-start;
   gap: 10px;

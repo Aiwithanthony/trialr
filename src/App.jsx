@@ -887,7 +887,18 @@ export function App() {
         <section className="setting-section account-section">
           <div className="section-heading">
             <h2>Instagram account</h2>
-            {!isDemo && <button className="refresh-button" type="button" onClick={refreshAccounts} aria-label="Refresh Instagram accounts" title="Refresh accounts"><IconRefresh size={18} className={accountLoading ? "spin" : ""} /></button>}
+            {!isDemo && (
+              <div className="section-heading-actions">
+                {/* The full-width Connect control only renders while no account exists,
+                    so without this the first connection is also the last one. */}
+                {configured && accounts.length > 0 && (
+                  <button className="new-test-inline" type="button" onClick={connectInstagram} title="Connect another Instagram account">
+                    <IconPlus size={16} /> Connect
+                  </button>
+                )}
+                <button className="refresh-button" type="button" onClick={refreshAccounts} aria-label="Refresh Instagram accounts" title="Refresh accounts"><IconRefresh size={18} className={accountLoading ? "spin" : ""} /></button>
+              </div>
+            )}
           </div>
           {accountLoading ? (
             <div className="account-control account-loading"><IconLoader2 className="spin" size={20} /> Loading accounts</div>
